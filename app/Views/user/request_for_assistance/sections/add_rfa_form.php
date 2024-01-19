@@ -49,7 +49,7 @@
 					
 					<div class="form-group">
 					<div class="col-12">Type Of Transaction</div>
-						<select class="custom-select input" id="input_barangay" name="type_of_transaction"  required>
+						<select class="custom-select input" id="input_transaction" name="type_of_transaction"  required >
 							<option value="">Select Type of Transaction</option> 
 							 <?php foreach ($type_of_transactions as $row) { ?>
                               <option  value="<?php echo $row ?>"><?php echo $row ?></option>
@@ -59,6 +59,39 @@
 					</div>
 					<div class="wizard-form-error"></div>
 				</div>
+
+				<div id="select_us" hidden="">
+
+
+					<div class="form-group" >
+					
+					<div class="form-group">
+					<div class="col-12">Refer to : </div>
+						<select class="custom-select input" id="select_user" name="select_user"  >
+							<option value="">Select CPESD Member</option> 
+							 <?php foreach ($users as $row) { ?>
+                              <option  value="<?php echo $row->user_id ?>"><?php echo $row->first_name.' '.$row->middle_name.' '.$row->last_name.' '.$row->extension ?> </option>
+                              <?php } ?>
+                           
+                        </select>
+					</div>
+					<div class="wizard-form-error"></div>
+				</div>
+
+
+
+				<div class="form-group">
+					
+					<div class="form-group">
+						<div class="col-12">Action Taken  :  </div>
+							<textarea id="action_tak" name="action_taken" class="form-control"></textarea>
+						</div>
+					<div class="wizard-form-error"></div>
+				</div>
+					
+				</div>
+
+				
 
 				 
 						<div class="form-group clearfix">

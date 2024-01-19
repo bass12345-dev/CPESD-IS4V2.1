@@ -50,7 +50,24 @@ class PendingRFATransactions extends BaseController
 
 
 
-    
+             $data_reffered = array(
+                'rfa_tracking_code'         => mt_rand().date('Ymd', time()).$this->request->getPost('reference_number'),
+                'number'                    => $this->request->getPost('reference_number'),
+                'rfa_date_filed'            => $now->format('Y-m-d H:i:s'),
+                'type_of_transaction'       =>$this->request->getPost('type_of_transaction'),
+                'tor_id'                    => $this->request->getPost('type_of_request'),
+                'client_id'                 => $this->request->getPost('client_id'),
+                'rfa_created_by'            => session()->get('user_id'),
+                'reffered_to'               => $this->request->getPost('select_user'),
+                'reffered_date_and_time'    => $now->format('Y-m-d H:i:s'),
+                'action_taken'              => $this->request->getPost('action_taken'),
+                'rfa_status'                => 'pending'        
+            );
+
+
+
+
+
              $array_where = array(
 
                     'rfa_date_filed'   => date('Y-m', time()),
@@ -62,24 +79,14 @@ class PendingRFATransactions extends BaseController
 
            if(!$verify){
 
+            if ($data['type_of_transaction'] == 'complex') {
+
+
             $result  = $this->RFAModel->addRFA($data);
 
             $item = $this->CustomModel->getwhere($this->rfa_transactions_table,array('rfa_id' => $result))[0]; 
 
-            // $history_logs = array(
-
-            //                 'track_code' => $data['rfa_tracking_code'],
-            //                 'received_by' => $data['rfa_created_by'],
-            //                 'received_date_and_time' => $data['rfa_date_filed'],
-            //                 'rfa_tracking_status'   => 'received'
-
-            // );
-
              if ($result) {
-
-
-                // $this->CustomModel->addData($this->rfa_transactions_history_table,$history_logs);
-
 
                     $resp = array(
 
@@ -95,6 +102,36 @@ class PendingRFATransactions extends BaseController
                     'response' => false
                     );
                 }
+
+
+            }else {
+
+
+               $result  = $this->RFAModel->addRFA($data_reffered);
+
+            $item = $this->CustomModel->getwhere($this->rfa_transactions_table,array('rfa_id' => $result))[0]; 
+
+             if ($result) {
+
+                    $resp = array(
+
+                   
+                    'message' => 'RFA Created and Reffered Successfully ',
+                    'response' => true
+                    );
+
+                }else {
+
+                    $resp = array(
+                    'message' => 'Error',
+                    'response' => false
+                    );
+                }
+
+
+
+
+            }
 
            }else {
 

@@ -31,8 +31,11 @@ class RequestForAssistanceController extends BaseController
         $data['title']                      = 'Request For Assistance';
         $data['barangay']                   = $this->config->barangay;
         $data['employment_status']          = $this->config->employment_status;
-        $data['type_of_request'] = $this->CustomModel->get_all_desc($this->type_of_request_table,'type_of_request_name',$this->order_by_desc);
-        $data['type_of_transactions']          = $this->config->type_of_transactions;
+        $data['type_of_request']            = $this->CustomModel->get_all_desc($this->type_of_request_table,'type_of_request_name',$this->order_by_desc);
+        $data['type_of_transactions']       = $this->config->type_of_transactions;
+        $where                              = array('user_status' => 'active');
+        $data['users']                      = $this->CustomModel->getwhere('users',$where); 
+    
         return view('user/request_for_assistance/index',$data);
 
         }else {
