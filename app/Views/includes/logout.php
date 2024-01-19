@@ -1,9 +1,41 @@
 <div class="col-md-6 col-sm-4 clearfix">
+
     <a href="<?php echo base_url('api/auth/sign_out') ?>" class="pull-right text-danger" style="font-size: 20px;">Logout</a>
+
+   
+       
+
+
+                
+
+
+
+
     <ul class="notification-area pull-right mr-3">
        <!--  <li class="settings-btn">
         <i class="ti-bell"></i>
         </li> -->
+
+         <?php if (session()->get('user_type') == 'admin') {
+           // code...
+         ?>
+
+          <li class="dropdown">
+                <i class="ti-bell dropdown-toggle" data-toggle="dropdown">
+                <span id="count_notif">2</span>
+                </i>
+                <div class="dropdown-menu bell-notify-box notify-box">
+                <span class="notify-title"><div class="notif-title"></div> <a href="#" style="font-size: 20px">view all</a> </span>
+                <div class="nofity-list">
+                
+               
+               
+                </div>
+
+                </div>
+        </li>
+
+         <?php } ?>
 
         <?php if (session()->get('user_type') == 'user') {
            // code...

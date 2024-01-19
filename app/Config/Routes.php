@@ -331,6 +331,8 @@ $routes->post('api/count-pending-rfa', 'api\PendingRFATransactions::count_pendin
 $routes->post('api/get-pmas-activities', 'api\PendingTransactions::get_pmas_activities');
 
 
+//Notifications
+$routes->post('api/notifications', 'api\Users::notifications');
 
 /*
  * --------------------------------------------------------------------

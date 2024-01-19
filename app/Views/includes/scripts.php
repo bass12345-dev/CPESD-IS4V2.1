@@ -38,6 +38,47 @@ $(document).on('click', 'a#view_user', function (e) {
             window.open(base_url + 'user/calendar-of-activities', '_blank'); 
         }); 
 
+
+
+
+
+function notification(){
+
+        $.ajax({
+      type: "POST",
+      url: base_url + 'api/notifications',
+      cache: false,
+      dataType: 'json',
+      success: function (data) {
+       if (data.length > 0) {
+
+        $('.notif-title').text('Notifications');
+        $('#count_notif').text(data.length);
+        var notif = '';
+        for (var i = 0; i < data.length; i++) {
+
+          notif += ' <a href="#" class="notify-item ">\
+                <div class="notify-thumb"><i class="ti-file btn-info"></i></div>\
+                <div class="notify-text">\
+                <p>'+data[i].not+'</p>\
+                <span>'+data[i].d_t+'</span>\
+                </div>\
+                </a>';
+         
+        }
+
+          $('.nofity-list').html(notif);
+
+       }else {
+        $('#count_notif').text(0);
+       }
+      }
+   })
+}
+
+
+
+notification();
 function count_total_reffered_rfa() {
    $.ajax({
       type: "POST",

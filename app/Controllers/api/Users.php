@@ -544,4 +544,29 @@ class Users extends BaseController
                     echo json_encode($resp);
 
    }
+
+
+
+
+   public function notifications(){
+
+        $item  = $this->CustomModel->get_notifications();
+
+        foreach ($item as $row) {
+
+            
+                $data[] = array(
+
+                        'not' => $row->first_name.' '.$row->middle_name.' '.$row->last_name.' '.$row->extension.' '.$row->notification_description,
+                        'd_t' => date('Y-m-d h:i A', strtotime($row->notification_date_time))
+                        
+                       
+                );
+        }
+
+
+            echo json_encode($data);
+
+
+   }
 }

@@ -172,9 +172,24 @@ class CustomModel extends Model
         $builder->where($where);
         $builder->where("DATE_FORMAT(cso_project_implemented.year,'%Y') = '".$year."' ");
         $builder->orderBy($order_key, $order_by);
+
         $query = $builder->get()->getResult();
         return $query;
 
+    }
+
+
+
+    public function get_notifications(){
+         
+        $builder = $this->db->table('notifications');
+        $builder->join('users','users.user_id = notifications.user_id_notification');
+        // $builder->where('notifications.notification_status != "seen"');
+        $builder->orderBy('notifications.notification_date_time', 'desc');
+     
+        $query = $builder->get()->getResult();
+        return $query;
+        
     }
 
 

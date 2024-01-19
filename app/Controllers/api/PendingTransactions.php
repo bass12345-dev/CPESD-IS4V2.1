@@ -195,6 +195,21 @@ class PendingTransactions extends BaseController
                      'meeting_absent'           => $this->request->getPost('meeting_absent'),
                  );
 
+
+
+
+             $notification_data = array(
+
+                                    'user_id_notification'      => session()->get('user_id'),
+                                    'notification_description'  => 'Added PMAS NO. '.$this->request->getPost('year').'-'.$this->request->getPost('month').'-'.$this->request->getPost('pmas_number'),
+                                    'notification_type'         => 'pmas',
+                                    'notification_status'       => 'not_seen',
+                                    'notification_date_time'    => $now->format('Y-m-d H:i:s'),
+            );
+
+           
+            $this->CustomModel->addData('notifications',$notification_data);
+
             if (strtolower($type_act_name) == 'training' ) {
 
                     $where = array('transaction_id'=>$id);
@@ -399,10 +414,18 @@ public function update_transaction(){
 
 
 
+            $notification_data = array(
+
+                                    'user_id_notification'      => session()->get('user_id'),
+                                    'notification_description'  => 'Updated PMAS NO. '.$this->request->getPost('update_year').'-'.$this->request->getPost('update_month').'-'.$this->request->getPost('update_pmas_number'),
+                                    'notification_type'         => 'pmas',
+                                    'notification_status'       => 'not_seen',
+                                    'notification_date_time'    => $now->format('Y-m-d H:i:s'),
+            );
+
            
+            $this->CustomModel->addData('notifications',$notification_data);
 
-
-   
 
             if (strtolower($type_act_name) == 'training' ) {
 
