@@ -75,6 +75,9 @@ $(document).on('click', 'button#reload_admin_pending_transaction', function (e) 
 $(document).on('click', 'a#add-remarks', function (e) {
    $("#add_remarks_modal").modal('show');
    $('input[name=transact_id]').val($(this).data('id'));
+   $('input[name=use_id]').val($(this).data('user-id'));
+   $('input[name=p_num]').val($(this).data('pmas-number'));
+
 });
 $(document).on('click', 'a#update-remark', function (e) {
    const id = $(this).data('id');
@@ -101,12 +104,18 @@ $('#add_remarks_modal').on('submit', function (e) {
    e.preventDefault();
    var myContent = tinymce.get("tiny").getContent();
    var id = $('input[name=transact_id]').val();
+   var user_id = $('input[name=use_id]').val();
+   var p_number = $('input[name=p_num]').val();
+
+   
    $.ajax({
       type: "POST",
       url: base_url + 'api/admin/add-remark',
       data: {
          content: myContent,
-         id: id
+         id: id,
+         user_id : user_id,
+         pmas_number : p_number
       },
       dataType: 'json',
       beforeSend: function () {

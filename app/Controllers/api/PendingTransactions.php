@@ -821,7 +821,7 @@ public function get_admin_pending_transaction_limit(){
                                                <i class="ti-settings" style="font-size : 15px;"></i>
                                               </button>
                                               <div class="dropdown-menu">
-                                                <a class="dropdown-item" href="javascript:;" data-id="'.$row->transaction_id.'" id="add-remarks">Add Remarks</a>
+                                                <a class="dropdown-item" href="javascript:;" data-user-id="'.$row->user_id.'" data-pmas-number="'.$pmas_no.'" data-id="'.$row->transaction_id.'" id="add-remarks">Add Remarks</a>
                                                 <hr>
                                                 <a class="dropdown-item" href="javascript:;" data-id="'.$row->transaction_id.'" data-status="'.$row->transaction_status.'"  id="view_transaction">View Information</a>
                                                  <hr>
@@ -1055,14 +1055,34 @@ public function get_admin_pending_transaction_limit(){
 
     public function add_remark(){
 
+        $now = new \DateTime();
+        $now->setTimezone(new \DateTimezone('Asia/Manila'));
+
         $data = array(
                     'remarks' => $this->request->getPost('content'),
                     
         );
         $where = array('transaction_id'=>$this->request->getPost('id'));
+        $user_id        = $this->request->getPost('user_id');
+        $pmas_no        = $this->request->getPost('pmas_number');
+
         $update = $this->CustomModel->updatewhere($where,$data,$this->transactions_table);
 
         if($update){
+
+
+        $notification_data = array(
+
+                                    'user_id_notification'      => $user_id,
+                                    'notification_description'  => 'Remarks added on your PMAS NO. '.$pmas_no,
+                                    'notification_type'         => 'pmas',
+                                    'notification_status'       => 'not_seen',
+                                    'notification_date_time'    => $now->format('Y-m-d H:i:s'),
+                                    'notification_url'          => 'view-transaction?id=',
+                                    'i_id'                      => $where['transaction_id']
+        );
+
+        $this->CustomModel->addData('notifications',$notification_data);
 
         $resp = array(
             'message' => 'Remarks Added Successfully',

@@ -10,6 +10,8 @@
          <form id="add_remarks_form">
             <div class="modal-body">
                <input type="hidden" class="form-control" id="transact_id" name="transact_id" placeholder="" required>
+               <input type="hidden" class="form-control" name="use_id" placeholder="" >
+               <input type="hidden" class="form-control" name="p_num" placeholder="" >
                <div class="form-group">
                   <label for="exampleInputPassword1">Remarks</label>
                   <div id="please_wait_remarks_alert"></div>

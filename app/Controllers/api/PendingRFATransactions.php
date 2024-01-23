@@ -79,6 +79,7 @@ class PendingRFATransactions extends BaseController
 
            if(!$verify){
 
+
             if ($data['type_of_transaction'] == 'complex') {
 
 
