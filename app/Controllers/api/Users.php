@@ -552,13 +552,19 @@ class Users extends BaseController
 
         $item  = $this->CustomModel->get_notifications();
 
+        $data = [];
+
         foreach ($item as $row) {
 
             
                 $data[] = array(
 
-                        'not' => $row->first_name.' '.$row->middle_name.' '.$row->last_name.' '.$row->extension.' '.$row->notification_description,
-                        'd_t' => date('Y-m-d h:i A', strtotime($row->notification_date_time))
+                        'not'   => $row->notification_description,
+                        'd_t'   => date('Y-m-d h:i A', strtotime($row->notification_date_time)),
+                        'stat'  => $row->notification_status == 'not_seen' ? false : true,
+                        'url'   => $row->notification_url,
+                        'i_id'  => $row->i_id,
+                        'notification_id'   => $row->notification_id
                         
                        
                 );
@@ -567,6 +573,37 @@ class Users extends BaseController
 
             echo json_encode($data);
 
+   }
 
+
+   public function seen_notification(){
+
+
+    $id     = $_GET['id'];
+    $where  = array('notification_id' => $id);
+    $data   = array('notification_status' => 'seen');
+    $table = 'notifications';
+    
+    $update = $this->CustomModel->updatewhere($where,$data,$table);
+
+                    if($update){
+
+                        $resp = array(
+                            
+                            'response' => true,
+                            'id'    => $id,
+                            'url'   => ''
+                        );
+
+                    }else {
+
+                        $resp = array(
+                            
+                            'response' => false,
+                        );
+
+                    }
+
+                    echo json_encode($resp);
    }
 }

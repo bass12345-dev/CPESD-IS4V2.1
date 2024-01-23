@@ -140,8 +140,9 @@ class PendingTransactions extends BaseController
             );
 
 
-            
 
+            $admin = $this->CustomModel->getwhere($this->users_table,array('user_type' => 'admin'))[0];
+            $user = $this->CustomModel->getwhere($this->users_table,array('user_id' => session()->get('user_id')))[0];
 
             
             $array_where = array(
@@ -200,11 +201,13 @@ class PendingTransactions extends BaseController
 
              $notification_data = array(
 
-                                    'user_id_notification'      => session()->get('user_id'),
-                                    'notification_description'  => 'Added PMAS NO. '.$this->request->getPost('year').'-'.$this->request->getPost('month').'-'.$this->request->getPost('pmas_number'),
+                                    'user_id_notification'      => $admin->user_id,
+                                    'notification_description'  => $user->first_name.' '.$user->middle_name.' '.$user->last_name.' '.$user->extension.' '.' Added PMAS NO. '.$this->request->getPost('year').'-'.$this->request->getPost('month').'-'.$this->request->getPost('pmas_number'),
                                     'notification_type'         => 'pmas',
                                     'notification_status'       => 'not_seen',
                                     'notification_date_time'    => $now->format('Y-m-d H:i:s'),
+                                    'notification_url'          => 'view-transaction?id=',
+                                    'i_id'                      => $id
             );
 
            
@@ -420,7 +423,9 @@ public function update_transaction(){
                                     'notification_description'  => 'Updated PMAS NO. '.$this->request->getPost('update_year').'-'.$this->request->getPost('update_month').'-'.$this->request->getPost('update_pmas_number'),
                                     'notification_type'         => 'pmas',
                                     'notification_status'       => 'not_seen',
-                                    'notification_date_time'    => $now->format('Y-m-d H:i:s'),
+                                    'notification_date_time'    =>  $now->format('Y-m-d H:i:s'),
+                                    'notification_url'          => 'view-transaction?id=',
+                                    'i_id'                      => $where['transaction_id'] 
             );
 
            
@@ -796,6 +801,8 @@ public function get_admin_pending_transaction_limit(){
             $status_display = '';
             $update_status = '';
 
+            $pmas_no =  date('Y', strtotime($row->date_and_time_filed)).' - '.date('m', strtotime($row->date_and_time_filed)).' - '.$row->number;
+
             
 
             if ($row->remarks == '' AND $row->action_taken_date == null) {
@@ -818,7 +825,7 @@ public function get_admin_pending_transaction_limit(){
                                                 <hr>
                                                 <a class="dropdown-item" href="javascript:;" data-id="'.$row->transaction_id.'" data-status="'.$row->transaction_status.'"  id="view_transaction">View Information</a>
                                                  <hr>
-                                                <a class="dropdown-item completed" href="javascript:;" data-id="'.$row->transaction_id.'" data-status="'.$row->transaction_status.'"  >Approve</a>
+                                                <a class="dropdown-item completed" href="javascript:;" data-user-id="'.$row->user_id.'" data-id="'.$row->transaction_id.'" data-pmas-number="'.$pmas_no.'" data-status="'.$row->transaction_status.'"  >Approve</a>
                                               </di>';
                 $status_display = '<a href="javascript:;" class="btn btn-danger btn-rounded p-1 pl-2 pr-2">no remarks</a> '.$update_status;
             }else if ($row->remarks != '' AND $row->action_taken_date == null) {
@@ -844,7 +851,7 @@ public function get_admin_pending_transaction_limit(){
 
             $data[] = array(
                             'transaction_id'        => $row->transaction_id,
-                            'pmas_no'               => date('Y', strtotime($row->date_and_time_filed)).' - '.date('m', strtotime($row->date_and_time_filed)).' - '.$row->number,
+                            'pmas_no'               => $pmas_no,
                             'date_and_time_filed'   => date('F d Y', strtotime($row->date_and_time_filed)).' '.date('h:i a', strtotime($row->date_and_time_filed)),
                             'responsible_section'   => $row->responsible_section_name,
                             'type_of_activity_name' => $row->type_of_activity_name,
@@ -1124,19 +1131,37 @@ public function update_completed(){
     $now = new \DateTime();
     $now->setTimezone(new \DateTimezone('Asia/Manila'));
     
-    $data = array(
+    $data           = array(
                 'transaction_status' => 'completed',
                 'transaction_date_time_completed' => $now->format('Y-m-d H:i:s'),
         );
-    $where = array('transaction_id'=>$this->request->getPost('id'));
-    $update = $this->CustomModel->updatewhere($where,$data,$this->transactions_table);
+    $where          = array('transaction_id'=>$this->request->getPost('id'));
+    $user_id        = $this->request->getPost('user_id');
+    $pmas_no        = $this->request->getPost('pmas_number');
+    $update         = $this->CustomModel->updatewhere($where,$data,$this->transactions_table);
 
     if($update){
+
+
+        $notification_data = array(
+
+                                    'user_id_notification'      => $user_id,
+                                    'notification_description'  => 'Your PMAS NO. '.$pmas_no. ' has been approved',
+                                    'notification_type'         => 'pmas',
+                                    'notification_status'       => 'not_seen',
+                                    'notification_date_time'    => $now->format('Y-m-d H:i:s'),
+                                    'notification_url'          => 'view-transaction?id=',
+                                    'i_id'                      => $where['transaction_id']
+            );
+
+        $this->CustomModel->addData('notifications',$notification_data);
 
         $resp = array(
             'message' => 'Updated Successfully',
             'response' => true
         );
+
+
 
         }else {
 

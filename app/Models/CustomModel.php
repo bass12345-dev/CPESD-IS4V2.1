@@ -185,8 +185,9 @@ class CustomModel extends Model
         $builder = $this->db->table('notifications');
         $builder->join('users','users.user_id = notifications.user_id_notification');
         // $builder->where('notifications.notification_status != "seen"');
+        $builder->where('notifications.user_id_notification', session()->get('user_id'));
         $builder->orderBy('notifications.notification_date_time', 'desc');
-     
+        $builder->limit(20);
         $query = $builder->get()->getResult();
         return $query;
         

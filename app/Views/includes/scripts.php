@@ -41,6 +41,10 @@ $(document).on('click', 'a#view_user', function (e) {
 
 
 
+$(document).on('click', 'i.ti-bell', function (e) {
+   alert('asd')
+});
+
 
 function notification(){
 
@@ -52,12 +56,22 @@ function notification(){
       success: function (data) {
        if (data.length > 0) {
 
-        $('.notif-title').text('Notifications');
-        $('#count_notif').text(data.length);
+       
+        
         var notif = '';
+
+        
+        let count  = 0;
+
+
         for (var i = 0; i < data.length; i++) {
 
-          notif += ' <a href="#" class="notify-item ">\
+        var  style = data[i].stat == false ? 'style="font-weight: bold;"' : '';
+
+        count +=  data[i].stat == false ? count + 1 : null;
+
+
+          notif += ' <a href="#" class="notify-item seen" data-id="'+data[i].notification_id+'" data-item="'+data[i].i_id+'" data-url="'+data[i].url+'" '+style+' >\
                 <div class="notify-thumb"><i class="ti-file btn-info"></i></div>\
                 <div class="notify-text">\
                 <p>'+data[i].not+'</p>\
@@ -66,7 +80,7 @@ function notification(){
                 </a>';
          
         }
-
+          $('#count_notif').text(count);
           $('.nofity-list').html(notif);
 
        }else {
@@ -77,8 +91,35 @@ function notification(){
 }
 
 
+$(document).on('click', 'a.seen', function (e) {
+   
+    var url = $(this).data('url');
+    var item = $(this).data('item');
+ 
 
-notification();
+     $.ajax({
+      type: "POST",
+      url: base_url + 'api/seen?id=' + $(this).data('id'),
+      cache: false,
+      dataType: 'json',
+      success: function (data) {
+
+        if (data.response) {
+          window.open(base_url + url + item, '_self');
+        }else {
+
+          alert('Not Found');
+        }
+
+
+      }
+
+
+    })
+});
+
+
+
 function count_total_reffered_rfa() {
    $.ajax({
       type: "POST",
@@ -130,10 +171,13 @@ $(document).on('click', '#back-button', function (e) {
    window.history.back();
 });
 
+notification();
 function loadlink() {
    load_total_pending_transactions();
    count_total_rfa_pending();
    count_total_reffered_rfa();
+
+
 }
 setInterval(function () {
    loadlink()

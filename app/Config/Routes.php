@@ -333,6 +333,7 @@ $routes->post('api/get-pmas-activities', 'api\PendingTransactions::get_pmas_acti
 
 //Notifications
 $routes->post('api/notifications', 'api\Users::notifications');
+$routes->post('api/seen', 'api\Users::seen_notification');
 
 /*
  * --------------------------------------------------------------------
