@@ -20,15 +20,16 @@ class PendingRFATransactions extends BaseController
     protected $CustomModel;
     protected $RFAModel;
     public $config;
+    protected $db;
 
 
      public function __construct()
     {
-       $db = db_connect();
-       $this->CustomModel = new CustomModel($db); 
-       $this->RFAModel = new RFAModel($db); 
-       $this->request = \Config\Services::request();  
-       $this->config = new Custom_config;
+       $this->db          = db_connect();
+       $this->CustomModel = new CustomModel($this->db); 
+       $this->RFAModel    = new RFAModel($this->db); 
+       $this->request     = \Config\Services::request();  
+       $this->config      = new Custom_config;
     }
   
     public function add_rfa(){
@@ -65,6 +66,9 @@ class PendingRFATransactions extends BaseController
             );
 
 
+           
+
+
 
 
 
@@ -79,11 +83,12 @@ class PendingRFATransactions extends BaseController
 
            if(!$verify){
 
-
             if ($data['type_of_transaction'] == 'complex') {
 
 
-            $result  = $this->RFAModel->addRFA($data);
+            // $result  = $this->RFAModel->addRFA($data);
+
+              $result = $this->insert_rfa_db($data,$data,$now);
 
             $item = $this->CustomModel->getwhere($this->rfa_transactions_table,array('rfa_id' => $result))[0]; 
 
@@ -108,7 +113,8 @@ class PendingRFATransactions extends BaseController
             }else {
 
 
-               $result  = $this->RFAModel->addRFA($data_reffered);
+               // $result  = $this->RFAModel->addRFA($data_reffered);
+            $result = $this->insert_rfa_db($data_reffered,$data,$now);
 
             $item = $this->CustomModel->getwhere($this->rfa_transactions_table,array('rfa_id' => $result))[0]; 
 
@@ -146,6 +152,33 @@ class PendingRFATransactions extends BaseController
            echo json_encode($resp);
 
           }
+    }
+
+    function insert_rfa_db($insert,$data,$now){
+
+
+      $x = $this->RFAModel->addRFA($insert);
+      $id             = $this->db->insertID();
+      $admin = $this->CustomModel->getwhere($this->users_table,array('user_type' => 'admin'))[0];
+      $user = $this->CustomModel->getwhere($this->users_table,array('user_id' => session()->get('user_id')))[0];
+      $notification_data = array(
+
+                                    'user_id_notification'      => $admin->user_id,
+                                    'notification_description'  => $user->first_name.' '.$user->middle_name.' '.$user->last_name.' '.$user->extension.' '.' Added RFA NO. '.date('Y', strtotime($data['rfa_date_filed'])).'-'.date('m', strtotime($data['rfa_date_filed'])).'-'.$data['number'],
+                                    'notification_type'         => 'rfa',
+                                    'notification_status'       => 'not_seen',
+                                    'notification_date_time'    => $now->format('Y-m-d H:i:s'),
+                                    'notification_url'          => 'view-rfa?id=',
+                                    'i_id'                      => $id
+            );
+
+           
+            $this->CustomModel->addData('notifications',$notification_data);
+
+
+      return $x;
+
+
     }
 
 

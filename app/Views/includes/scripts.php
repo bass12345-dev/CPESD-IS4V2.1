@@ -61,14 +61,18 @@ function notification(){
         var notif = '';
 
         
-        let count  = 0;
+        let count = []
 
 
         for (var i = 0; i < data.length; i++) {
 
         var  style = data[i].stat == false ? 'style="font-weight: bold;"' : '';
 
-        count +=  data[i].stat == false ? count + 1 : null;
+
+        if (data[i].stat == false) {
+          count.push(data[i].notification_id);
+        }
+        
 
 
           notif += ' <a href="#" class="notify-item seen" data-id="'+data[i].notification_id+'" data-item="'+data[i].i_id+'" data-url="'+data[i].url+'" '+style+' >\
@@ -80,7 +84,8 @@ function notification(){
                 </a>';
          
         }
-          $('#count_notif').text(count);
+
+          $('#count_notif').text(count.length);
           $('.nofity-list').html(notif);
 
        }else {
