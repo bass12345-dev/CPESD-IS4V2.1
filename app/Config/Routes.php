@@ -84,6 +84,7 @@ $routes->group('user', function($routes) {
     $routes->add('request-for-assistance', 'user\RequestForAssistanceController::index',['filter' => 'authGuard']);
     $routes->add('clients', 'ClientsController::index',['filter' => 'authGuard']);
     $routes->add('referred', 'user\ReferredController::index',['filter' => 'authGuard']);
+     $routes->add('targets', 'user\TargetsController::index',['filter' => 'authGuard']);
 
     $routes->add('calendar-of-activities', 'user\CalendarController::index',['filter' => 'authGuard']);
 });

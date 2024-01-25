@@ -22,10 +22,6 @@ class Users extends BaseController
 
     public function add_user()
     {
-
-    //     $now = new DateTime();
-    //     $now->setTimezone(new DateTimezone('Asia/Manila'));
-    // echo $now->format('Y-m-d H:i:s');
         if ($this->request->isAJAX()) {
 
              $now = new \DateTime();

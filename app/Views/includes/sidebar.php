@@ -123,6 +123,7 @@
                             </li>
                             <!-- <li class="<?= $page == 'dashboard' ? 'active' : ''?>"><a href="<?php echo base_url('user/dashboard') ?>" ><i class="fa fa-dashboard"></i> <span>Dashboard </span></a></li> -->
                             <li class="<?= $page == 'completed-transactions' ? 'active' : ''?>"><a href="<?php echo base_url('user/completed-transactions') ?>"><i class="fa fa-file"></i> <span>Completed Transactions </span></a></li>
+                          <!--   <li class="<?= $page == 'targets' ? 'active' : ''?>"><a href="<?php echo base_url('user/targets') ?>"><i class="fa fa-bullseye"></i> <span>Targets Report </span></a></li> -->
                             <li  class="<?= $page == 'pending-transactions' ? 'active' : ''?>"><a href="<?php echo base_url('user/pending-transactions') ?>"><i class="fa fa-hourglass-start"></i> <span>Pending Transactions</span> <span class="badge badge-danger count_pending">0</span></a></li>
                             
                             

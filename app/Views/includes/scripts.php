@@ -1,17 +1,10 @@
-    <script type="text/javascript">var base_url = '<?php echo site_url(); ?>';</script>
-
- 
-   
-    <script type="text/javascript" src="<?php echo site_url() ?>assets/js/bundle.js"></script>
-
-
-    <script src="<?php echo base_url(); ?>assets/datepicker/bootstrap-datetimepicker.min.js"></script>
+ <?php echo view('includes/notification_modal.php') ?>
+<script type="text/javascript">var base_url = '<?php echo site_url(); ?>';</script>
+<script type="text/javascript" src="<?php echo site_url() ?>assets/js/bundle.js"></script>
+<script src="<?php echo base_url(); ?>assets/datepicker/bootstrap-datetimepicker.min.js"></script>
     
 
-
-  
-
-    <script type="text/javascript">
+<script type="text/javascript">
 var _validFileExtensions = [".pdf"];
 var validImageExtensions = [".png", ".jpg", "jpeg"];
 $(document).on('click', 'a#update-cso-status', function (e) {

@@ -1,12 +1,6 @@
 <div class="col-md-6 col-sm-4 clearfix">
    <a href="<?php echo base_url('api/auth/sign_out') ?>" class="pull-right text-danger" style="font-size: 20px;">Logout</a>
    <ul class="notification-area pull-right mr-3">
-      <!--  <li class="settings-btn">
-         <i class="ti-bell"></i>
-         </li> -->
-     
-   
-     
       <li class="dropdown">
          <i class="ti-bell dropdown-toggle" data-toggle="dropdown">
          <span id="count_notif">
@@ -14,7 +8,7 @@
          <div class="dropdown-menu bell-notify-box notify-box">
             <span class="notify-title">
                Notification
-               <a href="#" style="font-size: 20px">view all</a> 
+               <a href="javascript:;" data-toggle="modal" data-target="#notification_modal" style="font-size: 20px">view all</a> 
             </span>
             <div class="nofity-list" style="overflow: scroll;">
             </div>
