@@ -42,8 +42,10 @@
                             cache: false,
                             dataType: 'json',  
                             success: function(data){
-                                    
-                                    $('.reference_no').text(data.ref_number)
+
+
+                              if (data) {
+                                 $('.reference_no').text(data.ref_number)
                                     $('.name_of_client').text(data.client_name)
                                     $('.type_of_request').text(data.type_of_request_name)
                                     $('.type_of_transaction').text(data.type_of_transaction)
@@ -57,13 +59,27 @@
                                     $('input[name=name_of_client]').val(data.client_name);
 
                                     $('select[name=type_of_request]').val(data.tor_id);
-
                                     $('select[name=type_of_transaction]').val(data.type_of_transaction);
+                                    open(data.type_of_transaction);
+                                    $('select[name=select_user]').val(data.reffered_to);
+                                    $('textarea[name=action_taken]').val(data.action_taken);
+
+
+                              }else {
+                                alert('Try to reload the page')
+                              }
+                                    
+                                   
+
+
 
 
                                     
                                     
                                  
+                                 },error : function(){
+
+                                  alert('Something Wrong!')
                                  }
                         })
 
@@ -76,7 +92,28 @@
          load_rfa_data();
 
 
-               $('#add_client_form').on('submit', function(e) {
+$(document).on('change', 'select#input_transaction', function (e) {
+  
+  var transaction = $('select[name=type_of_transaction]').val();
+
+  open(transaction);
+
+});
+
+
+function open(transaction){
+
+   if (transaction == 'simple') {
+    $('#select_us').removeAttr('hidden','hidden');
+    $('#select_user').attr('required', true)
+  }else {
+     $('#select_us').attr('hidden',true);
+      $('#select_user').attr('required', false)
+  }
+}
+
+
+    $('#add_client_form').on('submit', function(e) {
         e.preventDefault();
 
          $.ajax({

@@ -595,9 +595,9 @@ public function get_rfa_data(){
         
 
         $row = $this->RFAModel->getRFAData($this->rfa_transactions_table,array('rfa_id' => $this->request->getPost('id'),'created_by' => session()->get('user_id')))[0];
-
-
         $client = $this->CustomModel->getwhere($this->client_table,array('rfa_client_id' => $row->client_id))[0];
+
+
 
         $data = array(
 
@@ -615,6 +615,9 @@ public function get_rfa_data(){
 
                     'tor_id'                => $row->tor_id,
 
+                    'reffered_to'           => $row->reffered_to == NULL ? '' : $row->reffered_to,
+                    'action_taken'          => $row->action_taken == '' ? '' : $row->action_taken
+
 
 
                 
@@ -630,9 +633,24 @@ public function view_rfa_data(){
         $row = $this->RFAModel->ViewRFADATA($this->rfa_transactions_table,array('rfa_id' => $this->request->getPost('id')))[0];
 
 
-        $client = $this->CustomModel->getwhere($this->client_table,array('rfa_client_id' => $row->client_id))[0];
-        $referred_to = $this->CustomModel->getwhere($this->users_table,array('user_id' => $row->reffered_to))[0];
 
+
+        $client = $this->CustomModel->getwhere($this->client_table,array('rfa_client_id' => $row->client_id))[0];
+        $count_reffered = $this->CustomModel->countwhere($this->users_table,array('user_id' => $row->reffered_to));
+
+        $referred_to = '';
+
+
+        if ($count_reffered == 1) {
+          
+          $referred_to = $this->CustomModel->getwhere($this->users_table,array('user_id' => $row->reffered_to))[0];
+
+        }else {
+
+          $referred_to = '';
+        }
+
+    
         $data = array(
 
                     'date_time_filed'                   => date('F d Y h:i:A', strtotime($row->rfa_date_filed)),
@@ -650,7 +668,8 @@ public function view_rfa_data(){
                     'tor_id'                => $row->tor_id,
                     'encoded_by'            => $row->first_name.' '.$row->middle_name.' '.$row->last_name.' '.$row->extension,
                     'approved_date'         => date('F d Y h:i:A', strtotime($row->approved_date)),
-                    'referred_name'         => $referred_to->first_name.' '.$referred_to->middle_name.' '.$referred_to->last_name.' '.$referred_to->extension,
+                    // 'referred_name'         => $referred_to->first_name.' '.$referred_to->middle_name.' '.$referred_to->last_name.' '.$referred_to->extension,
+                    'referred_name'         => $referred_to  == '' ? ' - ' : $referred_to->first_name.' '.$referred_to->middle_name.' '.$referred_to->last_name.' '.$referred_to->extension ,
                     'status'                => $row->rfa_status == 'completed' ? '<a href="javascript:;" class="btn btn-success btn-rounded p-1 pl-2 pr-2">Completed</a>'.'<br>'.'<span>Approved Date  : </span> <b>'.date('F d Y h:i:A', strtotime($row->approved_date)).'</b>' : '<a href="javascript:;" class="btn btn-danger btn-rounded p-1 pl-2 pr-2">Pending</a>'
 
 
@@ -659,24 +678,57 @@ public function view_rfa_data(){
         );
         echo json_encode($data);
 
+     
+
 }
 
 
 public function update_rfa(){
 
+        $now = new \DateTime();
+        $now->setTimezone(new \DateTimezone('Asia/Manila'));
+
         $data = array(
 
-                    'client_id'           => $this->request->getPost('client_id'),
-                    'tor_id'              => $this->request->getPost('type_of_request'),
-                    'type_of_transaction' => $this->request->getPost('type_of_transaction'),
+                    'client_id'               => $this->request->getPost('client_id'),
+                    'tor_id'                  => $this->request->getPost('type_of_request'),
+                    'type_of_transaction'     => $this->request->getPost('type_of_transaction'),
+                    'reffered_to'             => $this->request->getPost('type_of_transaction') == 'complex' ? NULL : $this->request->getPost('select_user') ,
+                    'reffered_date_and_time'  => $this->request->getPost('type_of_transaction') == 'complex' ? '0000-00-00 00:00:00' : $now->format('Y-m-d H:i:s'),
+                    'action_taken'            => $this->request->getPost('type_of_transaction') == 'complex' ? '' : $this->request->getPost('action_taken'),  
 
         );
 
+
+       
+
+
+
         $where = array('rfa_id' => $this->request->getPost('rfa_id'));
+        $rfa = $this->CustomModel->getwhere($this->rfa_transactions_table,$where)[0];
+
 
         $update = $this->CustomModel->updatewhere($where,$data,$this->rfa_transactions_table);
 
         if($update){
+
+          $admin = $this->CustomModel->getwhere($this->users_table,array('user_type' => 'admin'))[0];
+          $user = $this->CustomModel->getwhere($this->users_table,array('user_id' => session()->get('user_id')))[0];
+
+
+          $notification_data = array(
+
+                                    'user_id_notification'      => $admin->user_id,
+                                    'notification_description'  => $user->first_name.' '.$user->middle_name.' '.$user->last_name.' '.$user->extension.' '.' Updated RFA NO. '.date('Y', strtotime($rfa->rfa_date_filed)).'-'.date('m', strtotime($rfa->rfa_date_filed)).'-'.$rfa->number,
+                                    'notification_type'         => 'rfa',
+                                    'notification_status'       => 'not_seen',
+                                    'notification_date_time'    => $now->format('Y-m-d H:i:s'),
+                                    'notification_url'          => 'view-rfa?id=',
+                                    'i_id'                      => $where['rfa_id']
+            );
+
+           
+            $this->CustomModel->addData('notifications',$notification_data);
 
                         $resp = array(
                             'message' => 'Successfully Updated',
@@ -696,10 +748,18 @@ public function update_rfa(){
 }
 
 
+
+
+
+
 public function refer_to(){
 
 
+            $now = new \DateTime();
+            $now->setTimezone(new \DateTimezone('Asia/Manila'));
+
             $where = array('rfa_id' => $this->request->getPost('rfa_id'));
+            $rfa = $this->CustomModel->getwhere($this->rfa_transactions_table,$where)[0];
             $data = array(
                 'reffered_to'              => $this->request->getPost('reffered_to'),
                 'action_taken'             => $this->request->getPost('action_taken'),
@@ -710,6 +770,24 @@ public function refer_to(){
             $update = $this->CustomModel->updatewhere($where,$data,$this->rfa_transactions_table);
 
                 if($update){
+
+                $admin = $this->CustomModel->getwhere($this->users_table,array('user_type' => 'admin'))[0];
+                $user = $this->CustomModel->getwhere($this->users_table,array('user_id' => $data['reffered_to']))[0];
+
+
+                $notification_data = array(
+
+                                    'user_id_notification'      => $data['reffered_to'],
+                                    'notification_description'  => $admin->first_name.' '.$admin->middle_name.' '.$admin->last_name.' '.$admin->extension.' '.' Referred RFA NO. '.date('Y', strtotime($rfa->rfa_date_filed)).'-'.date('m', strtotime($rfa->rfa_date_filed)).'-'.$rfa->number.' to you',
+                                    'notification_type'         => 'rfa',
+                                    'notification_status'       => 'not_seen',
+                                    'notification_date_time'    => $now->format('Y-m-d H:i:s'),
+                                    'notification_url'          => 'view-rfa?id=',
+                                    'i_id'                      => $where['rfa_id']
+                );
+
+           
+            $this->CustomModel->addData('notifications',$notification_data);
 
                                 $resp = array(
                                     'message' => 'Reffered Successfully',
@@ -736,21 +814,41 @@ public function refer_to(){
 
 public function accomplished(){
 
+            $now = new \DateTime();
+            $now->setTimezone(new \DateTimezone('Asia/Manila'));
+
 
             $where = array('rfa_id' => $this->request->getPost('rfa_id'));
+            $rfa = $this->CustomModel->getwhere($this->rfa_transactions_table,$where)[0];
             $data = array(
                 'accomplished_status'            => 1,
                 'action_to_be_taken'             => $this->request->getPost('action_to_be_taken'),
                 'action_to_be_taken_date_time'   => date('Y-m-d H:i:s', time()),
             );
 
-
-    
-
-
             $update = $this->CustomModel->updatewhere($where,$data,$this->rfa_transactions_table);
+            $admin = $this->CustomModel->getwhere($this->users_table,array('user_type' => 'admin'))[0];
+            $user = $this->CustomModel->getwhere($this->users_table,array('user_id' => session()->get('user_id')))[0];
 
-                if($update){
+
+        
+          if($update){
+
+
+                $notification_data = array(
+
+                                    'user_id_notification'      => $admin->user_id,
+                                    'notification_description'  => $user->first_name.' '.$user->middle_name.' '.$user->last_name.' '.$user->extension.' '.' Accomplished RFA NO. '.date('Y', strtotime($rfa->rfa_date_filed)).'-'.date('m', strtotime($rfa->rfa_date_filed)).'-'.$rfa->number,
+                                    'notification_type'         => 'rfa',
+                                    'notification_status'       => 'not_seen',
+                                    'notification_date_time'    => $now->format('Y-m-d H:i:s'),
+                                    'notification_url'          => 'view-rfa?id=',
+                                    'i_id'                      => $where['rfa_id']
+                );
+
+           
+            $this->CustomModel->addData('notifications',$notification_data);
+
 
                                 $resp = array(
                                     'message' => 'Accomplished Successfully',
@@ -783,18 +881,35 @@ public function approved_rfa(){
             $now->setTimezone(new \DateTimezone('Asia/Manila'));
 
             $where = array('rfa_id' => $this->request->getPost('id'));
+            $rfa = $this->CustomModel->getwhere($this->rfa_transactions_table,$where)[0];
             $data = array(
                 'rfa_status'            => 'completed',
                 'approved_date'   =>  $now->format('Y-m-d H:i:s'),
             );
 
 
-    
-
-
             $update = $this->CustomModel->updatewhere($where,$data,$this->rfa_transactions_table);
 
                 if($update){
+
+
+
+            $admin = $this->CustomModel->getwhere($this->users_table,array('user_type' => 'admin'))[0];
+            $user = $this->CustomModel->getwhere($this->users_table,array('user_id' => $rfa->reffered_to))[0];
+
+            $notification_data = array(
+
+                                    'user_id_notification'      => $rfa->reffered_to,
+                                    'notification_description'  => 'RFA NO. '.date('Y', strtotime($rfa->rfa_date_filed)).'-'.date('m', strtotime($rfa->rfa_date_filed)).'-'.$rfa->number.' has been approved',
+                                    'notification_type'         => 'rfa',
+                                    'notification_status'       => 'not_seen',
+                                    'notification_date_time'    => $now->format('Y-m-d H:i:s'),
+                                    'notification_url'          => 'view-rfa?id=',
+                                    'i_id'                      => $where['rfa_id']
+                );
+
+           
+            $this->CustomModel->addData('notifications',$notification_data);
 
                                 $resp = array(
                                     'message' => 'Approved Successfully',

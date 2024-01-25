@@ -45,7 +45,8 @@ class PendingRFAController extends BaseController
         $data['employment_status']          = $this->config->employment_status;
         $data['type_of_request'] = $this->CustomModel->get_all_desc($this->type_of_request_table,'type_of_request_name',$this->order_by_desc);
         $data['type_of_transactions']          = $this->config->type_of_transactions;
-
+        $where                              = array('user_status' => 'active','user_type' => 'user');
+        $data['users']                      = $this->CustomModel->getwhere('users',$where); 
 
         
         return view('user/rfa/pending/update_section/index',$data);
