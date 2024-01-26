@@ -414,12 +414,12 @@ public function update_transaction(){
             $where2 = array('training_transact_id'      => $where['transaction_id']);
             $where3 = array('project_transact_id'       => $where['transaction_id'] );
             $where4 = array('meeting_transaction_id'    => $where['transaction_id']);
-
+            $admin = $this->CustomModel->getwhere($this->users_table,array('user_type' => 'admin'))[0];
 
 
             $notification_data = array(
 
-                                    'user_id_notification'      => session()->get('user_id'),
+                                    'user_id_notification'      => $admin->user_id,
                                     'notification_description'  => 'Updated PMAS NO. '.$this->request->getPost('update_year').'-'.$this->request->getPost('update_month').'-'.$this->request->getPost('update_pmas_number'),
                                     'notification_type'         => 'pmas',
                                     'notification_status'       => 'not_seen',
