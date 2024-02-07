@@ -10,7 +10,7 @@
 							<input type="text" name="year" class="form-control" value="<?php echo date('Y', time()) ?>" readonly> </div>
 						<div class="input-group-prepend">
 							<input type="text" name="month" class="form-control" value="<?php echo date('m', time()) ?>" readonly> </div>
-						<input type="number" class="form-control  wizard-required input "  name="reference_number" readonly> </div>
+						<input type="number" class="form-control  wizard-required input " value="<?php echo $reference_number ?>"  name="reference_number" readonly> </div>
 					<div class="wizard-form-error"></div>
 				</div>
 				<div class="form-group clearfix">

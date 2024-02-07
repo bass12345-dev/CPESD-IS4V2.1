@@ -36,7 +36,7 @@
 
 $(document).on('click', 'a#reload_all_transactions', function (e) {
    $('#request_table').DataTable().destroy();
-   get_last_reference_number();
+   // get_last_reference_number();
    list_all_rfa_transactions();
 });
 
@@ -139,7 +139,9 @@ $('#add_rfa_form').on('submit', function (e) {
                      }).showToast();
                      $('a.form-wizard-previous-btn').click();
                   }
-                  get_last_reference_number();
+
+                  location.reload();
+                  // get_last_reference_number();
                },
                error: function (xhr) {
                   alert("Error occured.please try again");
@@ -154,17 +156,17 @@ $('#add_rfa_form').on('submit', function (e) {
    }
 });
 
-function get_last_reference_number() {
-   $.ajax({
-      url: base_url + 'api/get-last-reference-number',
-      type: 'POST',
-      dataType: 'text',
-      success: function (result) {
-         $('input[name=reference_number]').val(result);
-      }
-   });
-}
-get_last_reference_number();
+// function get_last_reference_number() {
+//    $.ajax({
+//       url: base_url + 'api/get-last-reference-number',
+//       type: 'POST',
+//       dataType: 'text',
+//       success: function (result) {
+//          $('input[name=reference_number]').val(result);
+//       }
+//    });
+// }
+// get_last_reference_number();
 $('#add_client_form').on('submit', function (e) {
    e.preventDefault();
    $.ajax({
@@ -209,6 +211,8 @@ $('#add_client_form').on('submit', function (e) {
                }
             }).showToast();
          }
+
+
       },
       error: function (xhr) {
          alert("Error occured.please try again");
