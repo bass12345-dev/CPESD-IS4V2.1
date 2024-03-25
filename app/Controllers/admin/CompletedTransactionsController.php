@@ -9,14 +9,14 @@ use App\Models\TransactionModel;
 class CompletedTransactionsController extends BaseController
 {
 
-    public $transactions_table         = 'transactions';
-    public $type_of_activity_table     = 'type_of_activities';
-    public $training_table             = 'trainings';
-    public $project_monitoring_table   = 'project_monitoring';
-    public $activity_table             = 'type_of_activities';
-    public $cso_table                  = 'cso';
-    public $order_by_desc              = 'desc';
-    public $order_by_asc               = 'asc';
+    private $transactions_table         = 'transactions';
+    private $type_of_activity_table     = 'type_of_activities';
+    private $training_table             = 'trainings';
+    private $project_monitoring_table   = 'project_monitoring';
+    private $activity_table             = 'type_of_activities';
+    private $cso_table                  = 'cso';
+    private $order_by_desc              = 'desc';
+    private $order_by_asc               = 'asc';
     protected $request;
     protected $CustomModel;
     protected $TransactionModel;
